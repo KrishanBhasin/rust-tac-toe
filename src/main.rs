@@ -29,17 +29,15 @@ fn main() {
 
 #[derive(Debug, Copy, Clone)]
 struct TicTacToeBoard {
-    squares: [SquareState; 9],
+    squares: [Square; 9],
     last_play: Option<LastPlay>,
     next_turn: SquareState
 }
 
 impl TicTacToeBoard {
     fn create_new() -> TicTacToeBoard {
-        // Ugly hack to initialise the array.
-        // squares: [SquareState::Empty; 9] // this would be much nicer
         TicTacToeBoard{
-            squares: [SquareState::Empty,SquareState::Empty,SquareState::Empty,SquareState::Empty,SquareState::Empty,SquareState::Empty,SquareState::Empty,SquareState::Empty,SquareState::Empty,],
+            squares: [Square{state:None};9],
             last_play: Option::None,
             next_turn: if rand::random() {
                     SquareState::X
@@ -87,11 +85,10 @@ impl TicTacToeBoard{
             piece: self.next_turn.clone(),
             location: location
         });
-        self.squares[location] = self.next_turn.clone();
+        self.squares[location] = Square{state:Some(self.next_turn.clone())};
         self.next_turn = match self.next_turn {
             SquareState::X => SquareState::O,
             SquareState::O => SquareState::X,
-            SquareState::Empty => panic!("the next turn is Empty????")
         };
         return self;
     }
@@ -99,17 +96,30 @@ impl TicTacToeBoard{
 
 
 #[derive(Debug, Copy, Clone)]
+struct Square {
+    state: Option<SquareState>
+}
+
+impl fmt::Display for Square {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self.state {
+            None => write!(f," "),
+            Some(s) => write!(f,"{}",s)
+        }
+    }
+}
+
+#[derive(Debug, Copy, Clone)]
 enum SquareState {
     X,
     O,
-    Empty
 }
+
 impl fmt::Display for SquareState {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
        match *self {
            SquareState::X => write!(f, "X"),
-           SquareState::O => write!(f, "O"),
-           SquareState::Empty => write!(f, " "),
+           SquareState::O => write!(f, "O")
        }
     }
 }
