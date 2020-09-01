@@ -27,7 +27,7 @@ fn main() {
 }
 
 
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Copy, Clone, PartialEq, Eq)]
 struct TicTacToeBoard {
     squares: [Square; 9],
     last_play: Option<LastPlay>,
@@ -48,7 +48,7 @@ impl TicTacToeBoard {
     }
 }
 
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Copy, Clone, PartialEq, Eq)]
 struct LastPlay {
     location: usize,
     piece: SquareState
@@ -90,12 +90,55 @@ impl TicTacToeBoard{
             SquareState::X => SquareState::O,
             SquareState::O => SquareState::X,
         };
+        if self.check_for_winner() {
+            panic!("SOMEBODY WON THE GAME!!!!11111")
+        }
         return self;
+    }
+
+    fn check_for_winner(self) -> bool {
+        // Horrible 8-way check for winning combinations
+        // Checking `is_some()` followed by equality feels questionable
+
+        // Top row
+        if self.squares[0].state.is_some() && self.squares[0] == self.squares[1] && self.squares[1] == self.squares[2] {
+            return true;
+        } else
+        // Middle row
+        if self.squares[3].state.is_some() && self.squares[3] == self.squares[4] && self.squares[4] == self.squares[5] {
+            return true
+        } else
+        // Bottom row
+        if self.squares[6].state.is_some() && self.squares[6] == self.squares[7] && self.squares[7] == self.squares[8] {
+            return true
+        } else
+        // Left column
+        if self.squares[0].state.is_some() && self.squares[0] == self.squares[3] && self.squares[3] == self.squares[6] {
+            return true
+        } else
+        // Middle column
+        if self.squares[1].state.is_some() && self.squares[1] == self.squares[4] && self.squares[4] == self.squares[7] {
+            return true
+        } else
+        // Right column
+        if self.squares[2].state.is_some() && self.squares[2] == self.squares[5] && self.squares[5] == self.squares[8] {
+            return true
+        } else
+        // Top left to bottom right
+        if self.squares[0].state.is_some() && self.squares[0] == self.squares[4] && self.squares[4] == self.squares[8] {
+            return true
+        } else
+        // Top right to bottom left
+        if self.squares[2].state.is_some() && self.squares[2] == self.squares[4] && self.squares[4] == self.squares[6] {
+            return true
+        } else {
+            return false
+        }
     }
 }
 
 
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Copy, Clone, PartialEq, Eq)]
 struct Square {
     state: Option<SquareState>
 }
@@ -109,7 +152,7 @@ impl fmt::Display for Square {
     }
 }
 
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Copy, Clone, PartialEq, Eq)]
 enum SquareState {
     X,
     O,
