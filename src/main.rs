@@ -10,13 +10,13 @@ fn main() {
     println!("========");
 
     let mut user_input = String::new();
-    println!("Please enter which tile you wish to place your piece on: [0-9]");
+    println!("Please enter which tile you wish to place your piece on: [0-8]");
     io::stdin().read_line(&mut user_input).unwrap();
 
     let chosen_location:Result<u8, ParseIntError> = user_input.trim().parse();
     let chosen_location: usize = match chosen_location {
         Ok(loc) => loc as usize,
-        Err(_err) => panic!("Looks like you chose a number that's out of bounds. Please stay within 0-9"),
+        Err(_err) => panic!("Looks like you didn't put a number in!"),
     };
 
 
@@ -83,7 +83,7 @@ impl TicTacToeBoard{
     fn place_piece(mut self, location: usize) -> TicTacToeBoard {
         self.last_play = Some(LastPlay{
             piece: self.next_turn.clone(),
-            location: location
+            location
         });
         self.squares[location] = Square{state:Some(self.next_turn.clone())};
         self.next_turn = match self.next_turn {
