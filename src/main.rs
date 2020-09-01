@@ -1,28 +1,55 @@
 use std::fmt;
+use std::io;
+use std::num::ParseIntError;
+
+use rand;
 
 fn main() {
-    let mut board = TicTacToeBoard{
-        // Ugly hack to initialise the array.
-        // squares: [SquareState::Empty; 9] // this would be much nicer
-        squares: [SquareState::Empty,SquareState::Empty,SquareState::Empty,SquareState::Empty,SquareState::Empty,SquareState::Empty,SquareState::Empty,SquareState::Empty,SquareState::Empty,],
-        last_play: Option::None
+    let mut board = TicTacToeBoard::create_new();
+    println!("{}", board);
+    println!("========");
+
+    let mut user_input = String::new();
+    println!("Please enter which tile you wish to place your piece on: [0-9]");
+    io::stdin().read_line(&mut user_input).unwrap();
+
+    let chosen_location:Result<u8, ParseIntError> = user_input.trim().parse();
+    let chosen_location: usize = match chosen_location {
+        Ok(loc) => loc as usize,
+        Err(_err) => panic!("Looks like you chose a number that's out of bounds. Please stay within 0-9"),
     };
 
+
+    board = board.place_piece(chosen_location);
     println!("{}", board);
     println!("========");
-    board = board.place_piece(SquareState::X, 0);
-    println!("{}", board);
-    println!("========");
-    board = board.place_piece(SquareState::O, 2);
-    println!("{:?}", board);
+
 }
 
 
 #[derive(Debug, Copy, Clone)]
 struct TicTacToeBoard {
     squares: [SquareState; 9],
-    last_play: Option<LastPlay>
+    last_play: Option<LastPlay>,
+    next_turn: SquareState
 }
+
+impl TicTacToeBoard {
+    fn create_new() -> TicTacToeBoard {
+        // Ugly hack to initialise the array.
+        // squares: [SquareState::Empty; 9] // this would be much nicer
+        TicTacToeBoard{
+            squares: [SquareState::Empty,SquareState::Empty,SquareState::Empty,SquareState::Empty,SquareState::Empty,SquareState::Empty,SquareState::Empty,SquareState::Empty,SquareState::Empty,],
+            last_play: Option::None,
+            next_turn: if rand::random() {
+                    SquareState::X
+                } else {
+                    SquareState::O
+                },
+        }
+    }
+}
+
 #[derive(Debug, Copy, Clone)]
 struct LastPlay {
     location: usize,
@@ -55,12 +82,17 @@ impl fmt::Display for TicTacToeBoard {
 
 
 impl TicTacToeBoard{
-    fn place_piece(mut self, piece: SquareState, location: usize) -> TicTacToeBoard {
+    fn place_piece(mut self, location: usize) -> TicTacToeBoard {
         self.last_play = Some(LastPlay{
-            piece: piece.clone(),
+            piece: self.next_turn.clone(),
             location: location
         });
-        self.squares[location] = piece.clone();
+        self.squares[location] = self.next_turn.clone();
+        self.next_turn = match self.next_turn {
+            SquareState::X => SquareState::O,
+            SquareState::O => SquareState::X,
+            SquareState::Empty => panic!("the next turn is Empty????")
+        };
         return self;
     }
 }
@@ -81,3 +113,5 @@ impl fmt::Display for SquareState {
        }
     }
 }
+
+
