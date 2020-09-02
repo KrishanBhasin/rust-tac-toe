@@ -56,49 +56,50 @@ impl TicTacToeBoard{
             SquareState::X => SquareState::O,
             SquareState::O => SquareState::X,
         };
-        if self.check_for_winner() {
-            panic!("SOMEBODY WON THE GAME!!!!11111")
+        let potential_winner = self.check_for_winner();
+        if potential_winner.is_some() {
+            panic!("{} WON THE GAME!!!!11111", potential_winner.unwrap())
         }
         return self;
     }
 
-    fn check_for_winner(self) -> bool {
+    fn check_for_winner(self) -> Option<SquareState> {
         // Horrible 8-way check for winning combinations
         // Checking `is_some()` followed by equality feels questionable
 
         // Top row
         if self.squares[0].state.is_some() && self.squares[0] == self.squares[1] && self.squares[1] == self.squares[2] {
-            return true;
+            return self.squares[0].state;
         } else
         // Middle row
         if self.squares[3].state.is_some() && self.squares[3] == self.squares[4] && self.squares[4] == self.squares[5] {
-            return true
+            return self.squares[3].state;
         } else
         // Bottom row
         if self.squares[6].state.is_some() && self.squares[6] == self.squares[7] && self.squares[7] == self.squares[8] {
-            return true
+            return self.squares[6].state;
         } else
         // Left column
         if self.squares[0].state.is_some() && self.squares[0] == self.squares[3] && self.squares[3] == self.squares[6] {
-            return true
+            return self.squares[0].state;
         } else
         // Middle column
         if self.squares[1].state.is_some() && self.squares[1] == self.squares[4] && self.squares[4] == self.squares[7] {
-            return true
+            return self.squares[1].state;
         } else
         // Right column
         if self.squares[2].state.is_some() && self.squares[2] == self.squares[5] && self.squares[5] == self.squares[8] {
-            return true
+            return self.squares[2].state;
         } else
         // Top left to bottom right
         if self.squares[0].state.is_some() && self.squares[0] == self.squares[4] && self.squares[4] == self.squares[8] {
-            return true
+            return self.squares[0].state;
         } else
         // Top right to bottom left
         if self.squares[2].state.is_some() && self.squares[2] == self.squares[4] && self.squares[4] == self.squares[6] {
-            return true
+            return self.squares[2].state;
         } else {
-            return false
+            return None
         }
     }
 }
