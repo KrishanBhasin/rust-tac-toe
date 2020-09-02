@@ -1,5 +1,5 @@
 [package]
-name = "tictactoe"
+name = "rustictactoe"
 version = "0.1.0"
 authors = ["KrishanBhasin <KrishanBhasin@users.noreply.github.com>"]
 edition = "2018"
