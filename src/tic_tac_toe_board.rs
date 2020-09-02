@@ -63,9 +63,11 @@ impl TicTacToeBoard{
         return self;
     }
 
-    fn check_for_winner(self) -> Option<SquareState> {
+    pub fn check_for_winner(self) -> Option<SquareState> {
         // Horrible 8-way check for winning combinations
         // Checking `is_some()` followed by equality feels questionable
+
+        println!("{}", self);
 
         // Top row
         if self.squares[0].state.is_some() && self.squares[0] == self.squares[1] && self.squares[1] == self.squares[2] {
@@ -127,7 +129,7 @@ impl fmt::Display for Square {
 }
 
 #[derive(Debug, Copy, Clone, PartialEq, Eq)]
-enum SquareState {
+pub enum SquareState {
     X,
     O,
 }

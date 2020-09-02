@@ -8,9 +8,16 @@ use crate::tic_tac_toe_board::TicTacToeBoard;
 
 fn main() {
     let mut board = TicTacToeBoard::create_new();
-    println!("{}", board);
-    println!("========");
 
+    while board.check_for_winner().is_none() {
+        board = do_turn(board);
+    }
+
+}
+
+
+fn do_turn(board: TicTacToeBoard) -> TicTacToeBoard {
+    
     let mut user_input = String::new();
     println!("Please enter which tile you wish to place your piece on: [0-8]");
     io::stdin().read_line(&mut user_input).unwrap();
@@ -22,9 +29,7 @@ fn main() {
     };
 
 
-    board = board.place_piece(chosen_location);
-    println!("{}", board);
-    println!("========");
+    board.place_piece(chosen_location)
 
 }
 
