@@ -1,11 +1,16 @@
 use std::fmt;
 use rand;
+use std::io;
+use std::num::ParseIntError;
+use std::collections::HashMap;
+
 
 #[derive(Debug, Copy, Clone, PartialEq, Eq)]
 pub struct TicTacToeBoard {
     squares: [Square; 9],
     last_play: Option<LastPlay>,
-    next_turn: SquareState
+    next_turn: PieceType,
+    //players: HashMap<PieceType, Player>
 }
 
 impl fmt::Display for TicTacToeBoard {
@@ -39,9 +44,9 @@ impl TicTacToeBoard{
             squares: [Square{state:None};9],
             last_play: Option::None,
             next_turn: if rand::random() {
-                    SquareState::X
+                    PieceType::X
                 } else {
-                    SquareState::O
+                    PieceType::O
                 },
         }
     }
@@ -53,8 +58,8 @@ impl TicTacToeBoard{
         });
         self.squares[location] = Square{state:Some(self.next_turn.clone())};
         self.next_turn = match self.next_turn {
-            SquareState::X => SquareState::O,
-            SquareState::O => SquareState::X,
+            PieceType::X => PieceType::O,
+            PieceType::O => PieceType::X,
         };
         let potential_winner = self.check_for_winner();
         if potential_winner.is_some() {
@@ -63,7 +68,7 @@ impl TicTacToeBoard{
         return self;
     }
 
-    pub fn check_for_winner(self) -> Option<SquareState> {
+    pub fn check_for_winner(self) -> Option<PieceType> {
         // Horrible 8-way check for winning combinations
         // Checking `is_some()` followed by equality feels questionable
 
@@ -104,6 +109,28 @@ impl TicTacToeBoard{
             return None
         }
     }
+
+    pub fn select_piece_placement(self, user: Player) -> usize {
+        match user {
+            Player::AI => {
+                panic!()
+            },
+            Player::Human =>{
+                let mut user_input = String::new();
+                println!("Please enter which tile you wish to place your piece on: [0-8]");
+                io::stdin().read_line(&mut user_input).unwrap();
+                let chosen_location:Result<u8, ParseIntError> = user_input.trim().parse();
+                
+                let chosen_location: usize = match chosen_location {
+                    Ok(loc) => loc as usize,
+                    Err(_err) => panic!("Looks like you didn't put a number in!"),
+                };
+
+                chosen_location
+            }
+        }
+    }
+
 }
 
 
@@ -111,12 +138,12 @@ impl TicTacToeBoard{
 #[derive(Debug, Copy, Clone, PartialEq, Eq)]
 struct LastPlay {
     location: usize,
-    piece: SquareState
+    piece: PieceType
 }
 
 #[derive(Debug, Copy, Clone, PartialEq, Eq)]
 struct Square {
-    state: Option<SquareState>
+    state: Option<PieceType>
 }
 
 impl fmt::Display for Square {
@@ -129,16 +156,22 @@ impl fmt::Display for Square {
 }
 
 #[derive(Debug, Copy, Clone, PartialEq, Eq)]
-pub enum SquareState {
+pub enum PieceType {
     X,
     O,
 }
 
-impl fmt::Display for SquareState {
+impl fmt::Display for PieceType {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-    match *self {
-        SquareState::X => write!(f, "X"),
-        SquareState::O => write!(f, "O")
+        match *self {
+            PieceType::X => write!(f, "X"),
+            PieceType::O => write!(f, "O")
+        }
     }
-    }
+}
+
+#[derive(Debug, Copy, Clone, PartialEq, Eq)]
+pub enum Player {
+    AI,
+    Human
 }
